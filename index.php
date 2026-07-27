@@ -156,7 +156,7 @@ foreach($facilities as $facility)
 
 
 
-<a href="booking.php" 
+<a href="sports-booking/booking.php" 
 class="btn btn-success">
 
 Book
