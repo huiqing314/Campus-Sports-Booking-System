@@ -15,43 +15,36 @@
 
 </head>
 
-
 <body>
-
 
 <!-- Navigation Bar -->
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
 
     <div class="container">
 
-        <a class="navbar-brand fw-bold" href="../index.php">
+        <a class="navbar-brand fw-bold" href="index.php">
             Campus Sports
         </a>
 
-
-        <button class="navbar-toggler" 
-                type="button" 
-                data-bs-toggle="collapse" 
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
                 data-bs-target="#navbarNav">
 
             <span class="navbar-toggler-icon"></span>
 
         </button>
 
-
-
         <div class="collapse navbar-collapse" id="navbarNav">
 
             <ul class="navbar-nav ms-auto">
 
-
                 <li class="nav-item">
-                    <a class="nav-link" href="../index.php">
+                    <a class="nav-link" href="index.php">
                         Home
                     </a>
                 </li>
-
 
                 <li class="nav-item">
                     <a class="nav-link" href="facilities.php">
@@ -59,19 +52,17 @@
                     </a>
                 </li>
 
-
                 <li class="nav-item">
-                    <a class="nav-link" href="booking.php">
-                        Booking
+                    <a class="nav-link" href="schedule.php">
+                        Schedule
                     </a>
                 </li>
 
                 <li class="nav-item">
-    <a class="nav-link" href="sports-booking/schedule.php">
-        Schedule
-    </a>
-</li>
-
+                     <a class="nav-link" href="booking.php">
+                        Booking
+                    </a>
+                </li>
 
                 <li class="nav-item">
                     <a class="nav-link" href="contact.php">
@@ -79,17 +70,14 @@
                     </a>
                 </li>
 
-
             </ul>
 
         </div>
-
 
     </div>
 
 </nav>
 
-
-<!-- Main Content Start -->
+<!-- Main Content -->
 
 <main>

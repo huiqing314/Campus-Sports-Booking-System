@@ -1,7 +1,5 @@
 <?php
-
-include "sports-booking/includes/header.php";
-
+include("includes/header.php");
 ?>
 
 
@@ -191,6 +189,6 @@ Book
 
 <?php
 
-include "sports-booking/includes/footer.php";
+include "includes/footer.php";
 
 ?>
