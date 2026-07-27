@@ -9,7 +9,9 @@ $conn = mysqli_connect(
 
 
 if (!$conn) {
-    die("Database connection failed: " . mysqli_connect_error());
+
+    die("Database Connection Failed: " . mysqli_connect_error());
+
 }
 
 ?>

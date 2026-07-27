@@ -1,5 +1,6 @@
 <?php
 
+include "includes/db.php";
 include "includes/header.php";
 
 ?>
@@ -19,7 +20,45 @@ Available Sports Facilities
 <div class="row">
 
 
-<!-- Badminton -->
+<?php
+
+
+$sql = "SELECT * FROM facilities WHERE status='Available'";
+
+
+$result = mysqli_query($conn, $sql);
+
+
+
+if(!$result){
+
+    die("Database Error: " . mysqli_error($conn));
+
+}
+
+
+
+while($facility = mysqli_fetch_assoc($result)){
+
+    // Set icon based on facility name
+    $icon = "🏟️"; // default
+
+    if ($facility["facility_name"] == "Badminton Court") {
+        $icon = "🏸";
+    } elseif ($facility["facility_name"] == "Basketball Court") {
+        $icon = "🏀";
+    } elseif ($facility["facility_name"] == "Football Field") {
+        $icon = "⚽";
+    } elseif ($facility["facility_name"] == "Swimming Pool") {
+        $icon = "🏊‍♀️";
+    } elseif ($facility["facility_name"] == "Tennis Court") {
+        $icon = "🎾";
+    } elseif ($facility["facility_name"] == "Gymnasium") {
+        $icon = "🏋️";
+    }
+
+?>
+
 
 <div class="col-md-4 mb-4">
 
@@ -27,36 +66,43 @@ Available Sports Facilities
 <div class="card h-100 shadow facility-card">
 
 
-<img src="../images/badminton.jpg"
-class="card-img-top"
-alt="Badminton Court"
-onerror="this.style.display='none'">
-
 
 <div class="card-body text-center">
 
 
+
+<h1>
+
+<?= $icon; ?>
+
+</h1>
+
+
+
 <h5>
 
-🏸 Badminton Court
+<?= $facility['facility_name']; ?>
 
 </h5>
 
 
+
 <p>
 
-Indoor badminton court with excellent lighting and professional flooring.
+<?= $facility['location']; ?>
 
 </p>
 
 
+
 <p>
 
-<b>Available Time:</b><br>
+<b>Status:</b>
 
-8:00 AM - 10:00 PM
+<?= $facility['status']; ?>
 
 </p>
+
 
 
 <a href="booking.php"
@@ -67,66 +113,6 @@ Book Now
 </a>
 
 
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-<!-- Basketball -->
-
-
-<div class="col-md-4 mb-4">
-
-
-<div class="card h-100 shadow facility-card">
-
-
-<img src="../images/basketball.jpg"
-class="card-img-top"
-alt="Basketball Court"
-onerror="this.style.display='none'">
-
-
-<div class="card-body text-center">
-
-
-<h5>
-
-🏀 Basketball Court
-
-</h5>
-
-
-<p>
-
-Outdoor basketball court suitable for student activities.
-
-</p>
-
-
-<p>
-
-<b>Available Time:</b><br>
-
-8:00 AM - 8:00 PM
-
-</p>
-
-
-<a href="booking.php"
-class="btn btn-success">
-
-Book Now
-
-</a>
-
 
 </div>
 
@@ -138,260 +124,15 @@ Book Now
 
 
 
+<?php
 
+}
 
-
-<!-- Football -->
-
-
-<div class="col-md-4 mb-4">
-
-
-<div class="card h-100 shadow facility-card">
-
-
-<img src="../images/football.jpg"
-class="card-img-top"
-alt="Football Field"
-onerror="this.style.display='none'">
-
-
-<div class="card-body text-center">
-
-
-<h5>
-
-⚽ Football Field
-
-</h5>
-
-
-<p>
-
-Full-size football field with quality grass surface.
-
-</p>
-
-
-<p>
-
-<b>Available Time:</b><br>
-
-7:00 AM - 10:00 PM
-
-</p>
-
-
-<a href="booking.php"
-class="btn btn-success">
-
-Book Now
-
-</a>
+?>
 
 
 </div>
 
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<!-- Swimming -->
-
-
-<div class="col-md-4 mb-4">
-
-
-<div class="card h-100 shadow facility-card">
-
-
-<img src="../images/swimming.jpg"
-class="card-img-top"
-alt="Swimming Pool"
-onerror="this.style.display='none'">
-
-
-<div class="card-body text-center">
-
-
-<h5>
-
-🏊 Swimming Pool
-
-</h5>
-
-
-<p>
-
-Olympic-size swimming pool for students.
-
-</p>
-
-
-<p>
-
-<b>Available Time:</b><br>
-
-8:00 AM - 6:00 PM
-
-</p>
-
-
-<a href="booking.php"
-class="btn btn-success">
-
-Book Now
-
-</a>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-<!-- Tennis -->
-
-
-<div class="col-md-4 mb-4">
-
-
-<div class="card h-100 shadow facility-card">
-
-
-<img src="../images/tennis.jpg"
-class="card-img-top"
-alt="Tennis Court"
-onerror="this.style.display='none'">
-
-
-<div class="card-body text-center">
-
-
-<h5>
-
-🎾 Tennis Court
-
-</h5>
-
-
-<p>
-
-Professional outdoor tennis facilities.
-
-</p>
-
-
-<p>
-
-<b>Available Time:</b><br>
-
-8:00 AM - 9:00 PM
-
-</p>
-
-
-<a href="booking.php"
-class="btn btn-success">
-
-Book Now
-
-</a>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-<!-- Gym -->
-
-
-<div class="col-md-4 mb-4">
-
-
-<div class="card h-100 shadow facility-card">
-
-
-<img src="../images/gym.jpg"
-class="card-img-top"
-alt="Gymnasium"
-onerror="this.style.display='none'">
-
-
-<div class="card-body text-center">
-
-
-<h5>
-
-🏋 Gymnasium
-
-</h5>
-
-
-<p>
-
-Modern fitness equipment for students.
-
-</p>
-
-
-<p>
-
-<b>Available Time:</b><br>
-
-6:00 AM - 10:00 PM
-
-</p>
-
-
-<a href="booking.php"
-class="btn btn-success">
-
-Book Now
-
-</a>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-</div>
 
 
 </section>

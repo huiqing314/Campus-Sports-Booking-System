@@ -1,5 +1,6 @@
 <?php
 
+include "includes/db.php";
 include "includes/header.php";
 
 ?>
@@ -148,7 +149,7 @@ Monday - Friday
 <a href="booking.php" 
 class="btn btn-success mt-3">
 
-Make A Booking
+Make a Booking
 
 </a>
 

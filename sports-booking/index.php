@@ -1,6 +1,13 @@
 <?php
+
+
+include("includes/db.php");
 include("includes/header.php");
+
+
 ?>
+
+
 
 
 <!-- Hero -->
@@ -12,26 +19,27 @@ include("includes/header.php");
 <div class="container text-center">
 
 
+
 <h1>
-
 Campus Sports & Facilities Amenities
-
 </h1>
 
 
-<p>
 
+<p>
 Reserve your favourite sports facilities online anytime,
 anywhere with TAR UMT Sports Booking System.
-
 </p>
+
 
 
 
 <a href="booking.php" 
 class="btn btn-warning btn-lg">
 
+
 Book Now
+
 
 </a>
 
@@ -41,6 +49,8 @@ Book Now
 
 
 </section>
+
+
 
 
 
@@ -48,14 +58,20 @@ Book Now
 <!-- Facilities -->
 
 
+
 <section class="container py-5">
+
 
 
 <h2 class="text-center mb-5">
 
+
 Available Facilities
 
+
 </h2>
+
+
 
 
 
@@ -63,132 +79,176 @@ Available Facilities
 
 
 
+
 <?php
 
 
-$facilities = [
 
-[
-"icon"=>"🏸",
-"name"=>"Badminton Court",
-"description"=>"Indoor badminton courts with excellent lighting."
-],
+// Get facilities from database
 
 
-[
-"icon"=>"🏀",
-"name"=>"Basketball Court",
-"description"=>"Outdoor basketball courts for students."
-],
-
-
-[
-"icon"=>"⚽",
-"name"=>"Football Field",
-"description"=>"Full-size football field with quality grass."
-],
-
-
-[
-"icon"=>"🏊",
-"name"=>"Swimming Pool",
-"description"=>"Olympic-size swimming pool."
-],
-
-
-[
-"icon"=>"🎾",
-"name"=>"Tennis Court",
-"description"=>"Professional outdoor tennis courts."
-],
-
-
-[
-"icon"=>"🏋",
-"name"=>"Gymnasium",
-"description"=>"Modern fitness equipment for students."
-]
-
-
-];
+$sql = "SELECT * FROM facilities WHERE status='Available'";
 
 
 
-foreach($facilities as $facility)
+$result = mysqli_query($conn, $sql);
+
+
+
+
+if(!$result){
+
+
+    die("Database Error: " . mysqli_error($conn));
+
+
+}
+
+
+
+
+
+while($facility = mysqli_fetch_assoc($result))
+
 
 {
 
+    // Set icon based on facility name
+    $icon = "🏟️"; // default
+
+    if ($facility["facility_name"] == "Badminton Court") {
+        $icon = "🏸";
+    } elseif ($facility["facility_name"] == "Basketball Court") {
+        $icon = "🏀";
+    } elseif ($facility["facility_name"] == "Football Field") {
+        $icon = "⚽";
+    } elseif ($facility["facility_name"] == "Swimming Pool") {
+        $icon = "🏊‍♀️";
+    } elseif ($facility["facility_name"] == "Tennis Court") {
+        $icon = "🎾";
+    } elseif ($facility["facility_name"] == "Gymnasium") {
+        $icon = "🏋️";
+    }
 
 ?>
+
+
 
 
 <div class="col-md-4 mb-4">
 
 
+
 <div class="card h-100 shadow facility-card">
+
 
 
 <div class="card-body text-center">
 
 
+
 <h1>
 
-<?= $facility["icon"]; ?>
+
+<?= $icon; ?>
+
 
 </h1>
 
 
+
+
 <h5>
 
-<?= $facility["name"]; ?>
+
+<?= $facility["facility_name"]; ?>
+
 
 </h5>
 
 
 
+
+
 <p>
 
-<?= $facility["description"]; ?>
+
+Location:
+
+
+<?= $facility["location"]; ?>
+
 
 </p>
+
+
+
+
+<p>
+
+
+Status:
+
+
+<?= $facility["status"]; ?>
+
+
+</p>
+
+
 
 
 
 <a href="booking.php" 
 class="btn btn-success">
 
+
 Book
+
 
 </a>
 
 
 
-</div>
-
 
 </div>
 
 
+
 </div>
+
+
+
+</div>
+
 
 
 
 <?php
 
+
 }
+
 
 ?>
 
 
+
+
 </div>
+
 
 
 </section>
 
 
 
+
+
 <?php
 
-include "includes/footer.php";
+
+include("includes/footer.php");
+
 
 ?>

@@ -1,5 +1,6 @@
 <?php
 
+include "includes/db.php";
 include "includes/header.php";
 
 // ---------- Form processing ----------
@@ -24,6 +25,10 @@ $allowed_times = [
     '4:00 PM',
     '6:00 PM',
 ];
+
+$pre_facility = trim($_GET['facility'] ?? $_POST['facility'] ?? '');
+$pre_date     = trim($_GET['date']     ?? $_POST['booking_date'] ?? '');
+$pre_time     = trim($_GET['time']     ?? $_POST['booking_time'] ?? '');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -72,21 +77,96 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Number of Participants cannot exceed 50.';
     }
 
-    // Success
+    // Insert booking into database
     if (empty($errors)) {
-        $success = true;
-        $booking = [
-            'student_name' => $student_name,
-            'student_id'   => $student_id,
-            'email'        => $email,
-            'facility'     => $facility,
-            'booking_date' => $booking_date,
-            'booking_time' => $booking_time,
-            'quantity'     => (int)$quantity,
-        ];
+
+        // Get facility_id
+        $facility_sql = "
+            SELECT facility_id 
+            FROM facilities 
+            WHERE facility_name='$facility'
+        ";
+
+        $facility_result = mysqli_query($conn, $facility_sql);
+        $facility_data = mysqli_fetch_assoc($facility_result);
+
+        if ($facility_data) {
+
+            $facility_id = $facility_data['facility_id'];
+
+            // Convert time format
+            $booking_time_db = date("H:i:s", strtotime($booking_time));
+            $end_time_db     = date("H:i:s", strtotime("+2 hours", strtotime($booking_time)));
+
+            // ===== Check if already booked =====
+            $check_sql = "
+                SELECT * FROM bookings 
+                WHERE facility_id = '$facility_id' 
+                AND booking_date = '$booking_date' 
+                AND start_time = '$booking_time_db'
+                AND status != 'Cancelled'
+            ";
+
+            $check_result = mysqli_query($conn, $check_sql);
+
+            if (mysqli_num_rows($check_result) > 0) {
+                $errors[] = "Sorry, this facility is already booked at the selected date and time.";
+            } else {
+
+                // Insert booking
+                $insert_sql = "
+                INSERT INTO bookings
+                (
+                    student_name,
+                    student_id,
+                    email,
+                    facility_id,
+                    booking_date,
+                    start_time,
+                    end_time,
+                    quantity,
+                    status
+                )
+                VALUES
+                (
+                    '$student_name',
+                    '$student_id',
+                    '$email',
+                    '$facility_id',
+                    '$booking_date',
+                    '$booking_time_db',
+                    '$end_time_db',
+                    '$quantity',
+                    'Pending'
+                )
+                ";
+
+                $insert_result = mysqli_query($conn, $insert_sql);
+
+                if ($insert_result) {
+
+                    $success = true;
+
+                    $booking = [
+                        'student_name' => $student_name,
+                        'student_id'   => $student_id,
+                        'email'        => $email,
+                        'facility'     => $facility,
+                        'booking_date' => $booking_date,
+                        'booking_time' => $booking_time,
+                        'quantity'     => (int)$quantity,
+                    ];
+
+                } else {
+                    $errors[] = "Database Error: " . mysqli_error($conn);
+                }
+            }
+
+        } else {
+            $errors[] = "Facility not found.";
+        }
     }
 }
-
 ?>
 
 
@@ -127,12 +207,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <td><?= htmlspecialchars($booking['facility']) ?></td>
 </tr>
 <tr>
-<th>Date</th>
+<th>Booking Date</th>
 <td><?= htmlspecialchars($booking['booking_date']) ?></td>
 </tr>
 <tr>
-<th>Time</th>
-<td><?= htmlspecialchars($booking['booking_time']) ?></td>
+<th>Time Slot</th>
+<td>
+<?= htmlspecialchars($booking['booking_time']) ?>
+-
+<?= date("h:i A", strtotime("+2 hours", strtotime($booking['booking_time']))) ?>
+</td>
 </tr>
 <tr>
 <th>Participants</th>
@@ -142,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="text-center mt-3">
 <a href="booking.php" class="btn btn-success me-2">Make Another Booking</a>
-<a href="../index.php" class="btn btn-outline-secondary">Back to Home</a>
+<a href="index.php" class="btn btn-outline-secondary">Back to Home</a>
 </div>
 
 </div>
@@ -277,42 +361,42 @@ required>
 </option>
 
 
-<option value="Badminton Court" <?= (($_POST['facility'] ?? '') === 'Badminton Court') ? 'selected' : '' ?>>
+<option value="Badminton Court" <?= ($pre_facility === 'Badminton Court') ? 'selected' : '' ?>>
 
 Badminton Court
 
 </option>
 
 
-<option value="Basketball Court" <?= (($_POST['facility'] ?? '') === 'Basketball Court') ? 'selected' : '' ?>>
+<option value="Basketball Court" <?= ($pre_facility === 'Basketball Court') ? 'selected' : '' ?>>
 
 Basketball Court
 
 </option>
 
 
-<option value="Football Field" <?= (($_POST['facility'] ?? '') === 'Football Field') ? 'selected' : '' ?>>
+<option value="Football Field" <?= ($pre_facility === 'Football Field') ? 'selected' : '' ?>>
 
 Football Field
 
 </option>
 
 
-<option value="Swimming Pool" <?= (($_POST['facility'] ?? '') === 'Swimming Pool') ? 'selected' : '' ?>>
+<option value="Swimming Pool" <?= ($pre_facility === 'Swimming Pool') ? 'selected' : '' ?>>
 
 Swimming Pool
 
 </option>
 
 
-<option value="Tennis Court" <?= (($_POST['facility'] ?? '') === 'Tennis Court') ? 'selected' : '' ?>>
+<option value="Tennis Court" <?= ($pre_facility === 'Tennis Court') ? 'selected' : '' ?>>
 
 Tennis Court
 
 </option>
 
 
-<option value="Gymnasium" <?= (($_POST['facility'] ?? '') === 'Gymnasium') ? 'selected' : '' ?>>
+<option value="Gymnasium" <?= ($pre_facility === 'Gymnasium') ? 'selected' : '' ?>>
 
 Gymnasium
 
@@ -346,7 +430,7 @@ Booking Date
 name="booking_date"
 class="form-control"
 min="<?= date('Y-m-d') ?>"
-value="<?= htmlspecialchars($_POST['booking_date'] ?? '') ?>"
+value="<?= htmlspecialchars($pre_date) ?>"
 required>
 
 
@@ -378,42 +462,42 @@ required>
 <option value="">-- Select Time --</option>
 
 
-<option value="8:00 AM" <?= (($_POST['booking_time'] ?? '') === '8:00 AM') ? 'selected' : '' ?>>
+<option value="8:00 AM" <?= ($pre_time === '8:00 AM') ? 'selected' : '' ?>>
 
 8:00 AM
 
 </option>
 
 
-<option value="10:00 AM" <?= (($_POST['booking_time'] ?? '') === '10:00 AM') ? 'selected' : '' ?>>
+<option value="10:00 AM" <?= ($pre_time === '10:00 AM') ? 'selected' : '' ?>>
 
 10:00 AM
 
 </option>
 
 
-<option value="12:00 PM" <?= (($_POST['booking_time'] ?? '') === '12:00 PM') ? 'selected' : '' ?>>
+<option value="12:00 PM" <?= ($pre_time === '12:00 PM') ? 'selected' : '' ?>>
 
 12:00 PM
 
 </option>
 
 
-<option value="2:00 PM" <?= (($_POST['booking_time'] ?? '') === '2:00 PM') ? 'selected' : '' ?>>
+<option value="2:00 PM" <?= ($pre_time === '2:00 PM') ? 'selected' : '' ?>>
 
 2:00 PM
 
 </option>
 
 
-<option value="4:00 PM" <?= (($_POST['booking_time'] ?? '') === '4:00 PM') ? 'selected' : '' ?>>
+<option value="4:00 PM" <?= ($pre_time === '4:00 PM') ? 'selected' : '' ?>>
 
 4:00 PM
 
 </option>
 
 
-<option value="6:00 PM" <?= (($_POST['booking_time'] ?? '') === '6:00 PM') ? 'selected' : '' ?>>
+<option value="6:00 PM" <?= ($pre_time === '6:00 PM') ? 'selected' : '' ?>>
 
 6:00 PM
 
