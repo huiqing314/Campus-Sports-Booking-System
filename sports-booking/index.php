@@ -28,7 +28,7 @@ anywhere with TAR UMT Sports Booking System.
 
 
 
-<a href="sports-booking/booking.php" 
+<a href="booking.php" 
 class="btn btn-warning btn-lg">
 
 Book Now
@@ -154,7 +154,7 @@ foreach($facilities as $facility)
 
 
 
-<a href="sports-booking/booking.php" 
+<a href="booking.php" 
 class="btn btn-success">
 
 Book
