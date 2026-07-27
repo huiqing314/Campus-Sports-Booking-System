@@ -25,7 +25,7 @@
 
     <div class="container">
 
-        <a class="navbar-brand fw-bold" href="index.php">
+        <a class="navbar-brand fw-bold" href="../index.php">
             Campus Sports
         </a>
 
