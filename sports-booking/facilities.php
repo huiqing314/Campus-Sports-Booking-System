@@ -27,9 +27,10 @@ Available Sports Facilities
 <div class="card h-100 shadow facility-card">
 
 
-<img src="images/badminton.jpg"
+<img src="../images/badminton.jpg"
 class="card-img-top"
-alt="Badminton Court">
+alt="Badminton Court"
+onerror="this.style.display='none'">
 
 
 <div class="card-body text-center">
@@ -87,9 +88,10 @@ Book Now
 <div class="card h-100 shadow facility-card">
 
 
-<img src="images/basketball.jpg"
+<img src="../images/basketball.jpg"
 class="card-img-top"
-alt="Basketball Court">
+alt="Basketball Court"
+onerror="this.style.display='none'">
 
 
 <div class="card-body text-center">
@@ -148,9 +150,10 @@ Book Now
 <div class="card h-100 shadow facility-card">
 
 
-<img src="images/football.jpg"
+<img src="../images/football.jpg"
 class="card-img-top"
-alt="Football Field">
+alt="Football Field"
+onerror="this.style.display='none'">
 
 
 <div class="card-body text-center">
@@ -210,9 +213,10 @@ Book Now
 <div class="card h-100 shadow facility-card">
 
 
-<img src="images/swimming.jpg"
+<img src="../images/swimming.jpg"
 class="card-img-top"
-alt="Swimming Pool">
+alt="Swimming Pool"
+onerror="this.style.display='none'">
 
 
 <div class="card-body text-center">
@@ -273,9 +277,10 @@ Book Now
 <div class="card h-100 shadow facility-card">
 
 
-<img src="images/tennis.jpg"
+<img src="../images/tennis.jpg"
 class="card-img-top"
-alt="Tennis Court">
+alt="Tennis Court"
+onerror="this.style.display='none'">
 
 
 <div class="card-body text-center">
@@ -336,9 +341,10 @@ Book Now
 <div class="card h-100 shadow facility-card">
 
 
-<img src="images/gym.jpg"
+<img src="../images/gym.jpg"
 class="card-img-top"
-alt="Gymnasium">
+alt="Gymnasium"
+onerror="this.style.display='none'">
 
 
 <div class="card-body text-center">
