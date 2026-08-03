@@ -1,6 +1,6 @@
 <?php
 
-
+include "includes/auth.php";  // Session check
 include("includes/db.php");
 include("includes/header.php");
 

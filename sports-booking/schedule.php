@@ -1,5 +1,6 @@
 <?php
 
+include "includes/session.php";  // Session check
 include "includes/db.php";
 include "includes/header.php";
 

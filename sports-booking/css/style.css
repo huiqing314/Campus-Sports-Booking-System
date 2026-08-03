@@ -271,5 +271,85 @@ footer{
 
 }
 
+/* ================= LOGIN PAGE ================= */
+
+.login-page{
+
+    background:
+    linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.55)),
+    url("images/hero.jpg");
+
+    background-size:cover;
+    background-position:center;
+
+    min-height:100vh;
+
+}
+
+.login-box{
+
+    width:420px;
+
+    margin:auto;
+
+    padding:40px;
+
+    border-radius:20px;
+
+    background:rgba(255,255,255,.12);
+
+    backdrop-filter:blur(10px);
+
+    box-shadow:0 10px 30px rgba(0,0,0,.4);
+
+}
+
+.login-box h1{
+
+    color:white;
+
+    font-weight:bold;
+
+}
+
+.login-box p{
+
+    color:#ddd;
+
+}
+
+.login-box label{
+
+    color:white;
+
+    font-weight:600;
+
+}
+
+.login-box .form-control{
+
+    height:50px;
+
+    background:rgba(255,255,255,.9);
+
+}
+
+.login-box .input-group-text{
+
+    background:white;
+
+}
+
+.login-box .btn-warning{
+
+    height:50px;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    border-radius:30px;
+
+}
 
 }
