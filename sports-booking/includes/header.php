@@ -38,36 +38,85 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
 
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto align-items-center">
+
 
                 <li class="nav-item">
-                    <a class="nav-link" href="index.php">
-                        Home
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="facilities.php">
+                    <a class="nav-link fs-6 fw-medium" href="facilities.php">
                         Facilities
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="schedule.php">
+                    <a class="nav-link fs-6 fw-medium" href="schedule.php">
                         Schedule
                     </a>
                 </li>
 
                 <li class="nav-item">
-                     <a class="nav-link" href="booking.php">
+                     <a class="nav-link fs-6 fw-medium" href="booking.php">
                         Booking
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="contact.php">
+                    <a class="nav-link fs-6 fw-medium" href="contact.php">
                         Contact
                     </a>
+                </li>
+
+                <li class="nav-item dropdown ms-lg-3">
+
+                    <a class="nav-link dropdown-toggle d-flex align-items-center"
+                       href="#"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       data-bs-offset="0, 8"> 
+
+                        <!-- Profile Circle -->
+                        <img src="images/profile.png"
+                             class="rounded-circle me-2"
+                             width="38"
+                             height="38"
+                             alt="Profile">
+
+                        
+                        <div class="text-white fs-6 lh-sm text-start me-1">
+                            <span class="d-block fw-light text-white-50">Welcome,</span>
+                            <span class="d-block fw-semibold text-white">
+                                <?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'User'; ?>
+                            </span>
+                        </div>
+
+                    </a>
+
+
+                    
+                    <ul class="dropdown-menu dropdown-menu-center">
+
+
+                        <li>
+                            <a class="dropdown-item" href="user.php">
+                                User Profile
+                            </a>
+                        </li>
+
+
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+
+                        <li>
+                            <a class="dropdown-item text-danger"
+                               href="logout.php">
+                                Logout
+                            </a>
+                        </li>
+
+
+                    </ul>
+
                 </li>
 
             </ul>
