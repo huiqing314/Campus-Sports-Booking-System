@@ -1,4 +1,4 @@
-<?php
+<?php  //database还没弄好有问题有问题 之后solve database改database database 没有phone 要删掉 然后加studentid 
 session_start();
 
 // 引入数据库配置文件
