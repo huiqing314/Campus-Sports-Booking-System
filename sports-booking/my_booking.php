@@ -1,4 +1,5 @@
-<?php
+<?php  //这个是for user booking history 应该也ok了
+
 // 1. 引入 Session
 require_once __DIR__ . '/includes/session.php';
 

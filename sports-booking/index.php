@@ -1,4 +1,4 @@
-<?php
+<?php  //全部ok了 
 
 require_once __DIR__ . '/includes/session.php';
 

@@ -1,4 +1,6 @@
-<?php
+<?php  //应该也ok了 但是user profile 比较简单
+
+ 
 // 1. 开启 Session
 require_once __DIR__ . '/includes/session.php';
 
