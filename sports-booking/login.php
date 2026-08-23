@@ -6,34 +6,89 @@ include "includes/db.php";
 
 $error = "";
 
+
+/* =========================
+   Already Logged In
+========================= */
+
 if (isset($_SESSION["user_id"])) {
-    header("Location: index.php");
-    exit();
+
+    if ($_SESSION["role"] == "admin") {
+
+        header("Location: admin/admin.php");
+        exit();
+
+    } else {
+
+        header("Location: index.php");
+        exit();
+
+    }
 }
+
+
+/* =========================
+   Login
+========================= */
 
 if (isset($_POST["login"])) {
 
-    $student_id = mysqli_real_escape_string($conn, $_POST["student_id"]);
-    $password   = mysqli_real_escape_string($conn, $_POST["password"]);
+    $student_id = mysqli_real_escape_string(
+        $conn,
+        $_POST["student_id"]
+    );
 
-    $sql = "SELECT * FROM users
+    $password = mysqli_real_escape_string(
+        $conn,
+        $_POST["password"]
+    );
+
+
+    $sql = "SELECT *
+            FROM users
             WHERE student_id='$student_id'
             AND password='$password'";
 
+
     $result = mysqli_query($conn, $sql);
+
 
     if (mysqli_num_rows($result) == 1) {
 
         $user = mysqli_fetch_assoc($result);
 
-        $_SESSION["user_id"] = $user["user_id"];
-        $_SESSION["student_id"] = $user["student_id"];
-        $_SESSION["name"] = $user["name"];
-        $_SESSION["role"] = $user["role"];
-        $_SESSION['photo']   = $user['photo'];
 
-        header("Location: index.php");
-        exit();
+        /* =========================
+           Store Session Information
+        ========================= */
+
+        $_SESSION["user_id"] = $user["user_id"];
+
+        $_SESSION["student_id"] = $user["student_id"];
+
+        $_SESSION["name"] = $user["name"];
+
+        $_SESSION["role"] = $user["role"];
+
+        $_SESSION["photo"] = $user["photo"];
+
+
+        /* =========================
+           Redirect Based on Role
+        ========================= */
+
+        if ($user["role"] == "admin") {
+
+            header("Location: admin/admin.php");
+            exit();
+
+        } else {
+
+            header("Location: index.php");
+            exit();
+
+        }
+
 
     } else {
 
@@ -41,57 +96,107 @@ if (isset($_POST["login"])) {
 
     }
 }
+
 ?>
 
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
 <title>Campus Sports Booking Login</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<!-- Bootstrap 5 -->
 
-<link rel="stylesheet" href="css/style.css">
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+
+
+<!-- Bootstrap Icons -->
+
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    rel="stylesheet">
+
+
+<!-- Custom CSS -->
+
+<link
+    rel="stylesheet"
+    href="css/style.css">
 
 </head>
 
+
 <body class="login-page">
 
-<div class="container d-flex justify-content-center align-items-center" style="min-height:100vh;">
+
+<div
+    class="container d-flex justify-content-center align-items-center"
+    style="min-height:100vh;">
+
 
     <div class="login-box">
 
+
+        <!-- Title -->
+
         <div class="text-center mb-4">
 
-            <h1>Campus Sports</h1>
+            <h1>
 
-            <p>Booking System</p>
+                Campus Sports
+
+            </h1>
+
+            <p>
+
+                Booking System
+
+            </p>
 
         </div>
 
-        <?php if($error!=""){ ?>
 
-        <div class="alert alert-danger">
+        <!-- Error Message -->
 
-            <?= $error ?>
+        <?php if ($error != "") { ?>
 
-        </div>
+            <div class="alert alert-danger">
+
+                <?= htmlspecialchars($error); ?>
+
+            </div>
 
         <?php } ?>
 
+
+        <!-- Login Form -->
+
         <form method="POST">
+
+
+            <!-- Student ID -->
 
             <div class="mb-3">
 
-                <label>Student ID</label>
+                <label>
+
+                    Student ID
+
+                </label>
+
 
                 <div class="input-group">
+
 
                     <span class="input-group-text">
 
@@ -99,22 +204,33 @@ if (isset($_POST["login"])) {
 
                     </span>
 
+
                     <input
-                    type="text"
-                    name="student_id"
-                    class="form-control"
-                    placeholder="Enter Student ID"
-                    required>
+                        type="text"
+                        name="student_id"
+                        class="form-control"
+                        placeholder="Enter Student ID"
+                        required>
+
 
                 </div>
 
             </div>
 
+
+            <!-- Password -->
+
             <div class="mb-4">
 
-                <label>Password</label>
+                <label>
+
+                    Password
+
+                </label>
+
 
                 <div class="input-group">
+
 
                     <span class="input-group-text">
 
@@ -122,31 +238,39 @@ if (isset($_POST["login"])) {
 
                     </span>
 
+
                     <input
-                    type="password"
-                    name="password"
-                    class="form-control"
-                    placeholder="Enter Password"
-                    required>
+                        type="password"
+                        name="password"
+                        class="form-control"
+                        placeholder="Enter Password"
+                        required>
+
 
                 </div>
 
             </div>
 
+
+            <!-- Login Button -->
+
             <button
-            type="submit"
-            name="login"
-            class="btn btn-warning w-100">
+                type="submit"
+                name="login"
+                class="btn btn-warning w-100">
 
                 Login
 
             </button>
 
+
         </form>
+
 
     </div>
 
 </div>
+
 
 </body>
 
