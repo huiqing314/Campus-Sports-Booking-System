@@ -12,7 +12,7 @@ $user_role    = $is_logged_in && isset($_SESSION['role']) ? $_SESSION['role'] : 
 // 设置头像路径：如果用户有 photo 且不为空，则读取，否则用默认图片
 $user_photo = 'images/profile.png'; // 默认头像
 if ($is_logged_in && !empty($_SESSION['photo'])) {
-    $custom_photo = 'images/' . $_SESSION['photo'];
+    $custom_photo = 'uploads/' . $_SESSION['photo'];
     if (file_exists($custom_photo)) {
         $user_photo = $custom_photo;
     }

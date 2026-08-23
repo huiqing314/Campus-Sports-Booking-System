@@ -88,8 +88,8 @@ if (!$user) {
 
 // 判断头像路径
 $avatar = 'images/profile.png';
-if (!empty($user['photo']) && file_exists(__DIR__ . '/images/' . $user['photo'])) {
-    $avatar = 'images/' . $user['photo'];
+if (!empty($user['photo']) && file_exists(__DIR__ . '/uploads/' . $user['photo'])) {
+    $avatar = 'uploads/' . $user['photo'];
 }
 
 // 引入 Header
