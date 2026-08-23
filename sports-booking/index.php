@@ -1,6 +1,8 @@
 <?php
 
-include "includes/auth.php";  // Session check
+require_once __DIR__ . '/includes/session.php';
+
+
 include("includes/db.php");
 include("includes/header.php");
 

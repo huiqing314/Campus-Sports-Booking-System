@@ -30,6 +30,7 @@ if (isset($_POST["login"])) {
         $_SESSION["student_id"] = $user["student_id"];
         $_SESSION["name"] = $user["name"];
         $_SESSION["role"] = $user["role"];
+        $_SESSION['photo']   = $user['photo'];
 
         header("Location: index.php");
         exit();
