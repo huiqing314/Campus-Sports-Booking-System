@@ -13,7 +13,6 @@ if (!isset($_SESSION["user_id"])) {
 
     header("Location: ../login.php");
     exit();
-
 }
 
 
@@ -25,7 +24,6 @@ if ($_SESSION["role"] !== "admin") {
 
     header("Location: ../index.php");
     exit();
-
 }
 
 
@@ -49,10 +47,10 @@ $result = mysqli_query($conn, $sql);
 if (!$result) {
 
     die("Database Error: " . mysqli_error($conn));
-
 }
 
 ?>
+
 
 <!DOCTYPE html>
 
@@ -62,8 +60,9 @@ if (!$result) {
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <title>
         User Management - Campus Sports
@@ -96,466 +95,519 @@ if (!$result) {
 <body class="bg-light">
 
 
-<!-- =========================
+    <!-- =========================
      Navbar
 ========================= -->
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
 
-    <div class="container">
+        <div class="container">
 
 
-        <a
-            class="navbar-brand fw-bold"
-            href="admin.php">
+            <a
+                class="navbar-brand fw-bold"
+                href="admin.php">
 
-            Campus Sports Admin
+                Campus Sports Admin
 
-        </a>
+            </a>
 
 
-        <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav">
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
 
-            <span class="navbar-toggler-icon"></span>
+                <span class="navbar-toggler-icon"></span>
 
-        </button>
+            </button>
 
 
-        <div
-            class="collapse navbar-collapse"
-            id="navbarNav">
+            <div
+                class="collapse navbar-collapse"
+                id="navbarNav">
 
 
-            <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto">
 
 
-                <!-- Dashboard -->
+                    <!-- Dashboard -->
 
-                <li class="nav-item">
+                    <li class="nav-item">
 
-                    <a
-                        class="nav-link"
-                        href="admin.php">
+                        <a
+                            class="nav-link"
+                            href="admin.php">
 
-                        Dashboard
+                            Dashboard
 
-                    </a>
+                        </a>
 
-                </li>
+                    </li>
 
 
-                <!-- Users -->
+                    <!-- Users -->
 
-                <li class="nav-item">
+                    <li class="nav-item">
 
-                    <a
-                        class="nav-link active"
-                        href="admin_users.php">
+                        <a
+                            class="nav-link active"
+                            href="admin_users.php">
 
-                        Users
+                            Users
 
-                    </a>
+                        </a>
 
-                </li>
+                    </li>
 
 
-                <!-- Facilities -->
+                    <!-- Facilities -->
 
-                <li class="nav-item">
+                    <li class="nav-item">
 
-                    <a
-                        class="nav-link"
-                        href="admin_facilities.php">
+                        <a
+                            class="nav-link"
+                            href="admin_facilities.php">
 
-                        Facilities
+                            Facilities
 
-                    </a>
+                        </a>
 
-                </li>
+                    </li>
 
 
-                <!-- Bookings -->
+                    <!-- Bookings -->
 
-                <li class="nav-item">
+                    <li class="nav-item">
 
-                    <a
-                        class="nav-link"
-                        href="admin_bookings.php">
+                        <a
+                            class="nav-link"
+                            href="admin_bookings.php">
 
-                        Bookings
+                            Bookings
 
-                    </a>
+                        </a>
 
-                </li>
+                    </li>
 
 
-                <!-- Logout -->
+                    <!-- Logout -->
 
-                <li class="nav-item">
+                    <li class="nav-item">
 
-                    <a
-                        class="nav-link text-danger"
-                        href="../logout.php">
+                        <a
+                            class="nav-link text-danger"
+                            href="../logout.php">
 
-                        Logout
+                            Logout
 
-                    </a>
+                        </a>
 
-                </li>
+                    </li>
 
 
-            </ul>
-
-        </div>
-
-    </div>
-
-</nav>
-
-
-<!-- =========================
-     Main Content
-========================= -->
-
-<main class="container py-5">
-
-
-    <!-- Page Header -->
-
-    <div class="d-flex
-                justify-content-between
-                align-items-center
-                mb-4">
-
-
-        <div>
-
-            <h1 class="fw-bold mb-1">
-
-                User Management
-
-            </h1>
-
-            <p class="text-muted mb-0">
-
-                Manage student and admin accounts.
-
-            </p>
-
-        </div>
-
-
-        <!-- Add User Button -->
-
-        <a
-            href="admin_user_add.php"
-            class="btn btn-primary">
-
-            <i class="bi bi-person-plus-fill me-1"></i>
-
-            Add User
-
-        </a>
-
-
-    </div>
-
-
-    <!-- =========================
-         Users Table
-    ========================= -->
-
-    <div class="card border-0 shadow-sm">
-
-
-        <div class="card-body p-0">
-
-
-            <div class="table-responsive">
-
-
-                <table
-                    class="table table-hover align-middle mb-0">
-
-
-                    <thead class="table-dark">
-
-                        <tr>
-
-                            <th class="px-4">
-
-                                No.
-
-                            </th>
-
-
-                            <th>
-
-                                Photo
-
-                            </th>
-
-
-                            <th>
-
-                                Student ID
-
-                            </th>
-
-
-                            <th>
-
-                                Name
-
-                            </th>
-
-
-                            <th>
-
-                                Email
-
-                            </th>
-
-
-                            <th>
-
-                                Role
-
-                            </th>
-
-
-                            <th class="text-center">
-
-                                Action
-
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-
-                    <?php
-
-                    $counter = 1;
-
-                    while ($user = mysqli_fetch_assoc($result)) {
-
-                        $photo = $user["photo"];
-
-
-                        if (empty($photo)) {
-
-                            $photo = "default-avatar.jpg";
-
-                        }
-
-                    ?>
-
-
-                        <tr>
-
-
-                            <!-- Number -->
-
-                            <td class="px-4">
-
-                                <?= $counter; ?>
-
-                            </td>
-
-
-                            <!-- Photo -->
-
-                            <td>
-
-                                <img
-                                    src="../uploads/<?= htmlspecialchars($photo); ?>"
-                                    alt="Profile Photo"
-                                    width="50"
-                                    height="50"
-                                    class="rounded-circle"
-                                    style="object-fit:cover;">
-
-                            </td>
-
-
-                            <!-- Student ID -->
-
-                            <td>
-
-                                <strong>
-
-                                    <?= htmlspecialchars(
-                                        $user["student_id"]
-                                    ); ?>
-
-                                </strong>
-
-                            </td>
-
-
-                            <!-- Name -->
-
-                            <td>
-
-                                <?= htmlspecialchars(
-                                    $user["name"]
-                                ); ?>
-
-                            </td>
-
-
-                            <!-- Email -->
-
-                            <td>
-
-                                <?= htmlspecialchars(
-                                    $user["email"]
-                                ); ?>
-
-                            </td>
-
-
-                            <!-- Role -->
-
-                            <td>
-
-                                <?php if ($user["role"] === "admin") { ?>
-
-                                    <span
-                                        class="badge bg-danger">
-
-                                        Admin
-
-                                    </span>
-
-                                <?php } else { ?>
-
-                                    <span
-                                        class="badge bg-primary">
-
-                                        Student
-
-                                    </span>
-
-                                <?php } ?>
-
-                            </td>
-
-
-                            <!-- Actions -->
-
-                            <td class="text-center">
-
-
-                                <!-- Edit -->
-
-                                <a
-                                    href="admin_user_edit.php?id=<?= $user["user_id"]; ?>"
-                                    class="btn btn-sm btn-outline-primary me-1">
-
-                                    <i class="bi bi-pencil"></i>
-
-                                    Edit
-
-                                </a>
-
-
-                                <!-- Delete -->
-
-                                <?php if ($user["user_id"] == $_SESSION["user_id"]) { ?>
-
-                                    <!-- Current Admin -->
-
-                                    <button
-                                        type="button"
-                                        class="btn btn-sm btn-outline-secondary"
-                                        disabled
-                                        title="You cannot delete your own account">
-
-                                        <i class="bi bi-trash"></i>
-
-                                        Delete
-
-                                    </button>
-
-                                <?php } else { ?>
-
-                                    <!-- Other Users -->
-
-                                    <a
-                                        href="admin_user_delete.php?id=<?= $user["user_id"]; ?>"
-                                        class="btn btn-sm btn-outline-danger"
-                                        onclick="return confirm('Are you sure you want to delete this user?');">
-
-                                        <i class="bi bi-trash"></i>
-
-                                        Delete
-
-                                    </a>
-
-                                <?php } ?>
-
-
-                            </td>
-
-
-                        </tr>
-
-
-                    <?php
-
-                        $counter++;
-
-                    }
-
-                    ?>
-
-
-                    <?php if ($counter === 1) { ?>
-
-                        <tr>
-
-                            <td
-                                colspan="7"
-                                class="text-center text-muted py-5">
-
-                                No users found.
-
-                            </td>
-
-                        </tr>
-
-                    <?php } ?>
-
-
-                    </tbody>
-
-                </table>
+                </ul>
 
             </div>
 
         </div>
 
-    </div>
+    </nav>
 
 
-</main>
+    <!-- =========================
+     Main Content
+========================= -->
+
+    <main class="container py-5">
 
 
-<!-- Bootstrap JS -->
+        <!-- Page Header -->
 
-<script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
-</script>
+        <div class="d-flex
+                justify-content-between
+                align-items-center
+                mb-4">
+
+
+            <div>
+
+                <h1 class="fw-bold mb-1">
+
+                    User Management
+
+                </h1>
+
+                <p class="text-muted mb-0">
+
+                    Manage student and admin accounts.
+
+                </p>
+
+            </div>
+
+
+            <!-- Add User Button -->
+
+            <a
+                href="admin_user_add.php"
+                class="btn btn-primary">
+
+                <i class="bi bi-person-plus-fill me-1"></i>
+
+                Add User
+
+            </a>
+
+
+        </div>
+
+
+        <!-- =========================
+         Users Table
+    ========================= -->
+
+        <div class="card border-0 shadow-sm">
+
+
+            <div class="card-body p-0">
+
+
+                <div class="table-responsive">
+
+
+                    <table
+                        class="table table-hover align-middle mb-0">
+
+
+                        <thead class="table-dark">
+
+                            <tr>
+
+
+                                <th class="px-4">
+
+                                    No.
+
+                                </th>
+
+
+                                <th>
+
+                                    Photo
+
+                                </th>
+
+
+                                <th>
+
+                                    Student ID
+
+                                </th>
+
+
+                                <th>
+
+                                    Name
+
+                                </th>
+
+
+                                <th>
+
+                                    Email
+
+                                </th>
+
+
+                                <th>
+
+                                    Role
+
+                                </th>
+
+
+                                <th class="text-center">
+
+                                    Action
+
+                                </th>
+
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                            <?php
+
+                            $counter = 1;
+
+
+                            while (
+                                $user =
+                                mysqli_fetch_assoc($result)
+                            ) {
+
+
+                                $photo = $user["photo"];
+
+
+                                /* Default Profile Photo */
+
+                                if (empty($photo)) {
+
+                                    $photo = "profile.png";
+                                }
+
+                            ?>
+
+
+                                <tr>
+
+
+                                    <!-- Number -->
+
+                                    <td class="px-4">
+
+                                        <?= $counter; ?>
+
+                                    </td>
+
+
+                                    <!-- Photo -->
+
+                                    <td>
+
+                                        <img
+                                            src="../uploads/<?= htmlspecialchars($photo); ?>"
+                                            alt="Profile Photo"
+                                            width="50"
+                                            height="50"
+                                            class="rounded-circle"
+                                            style="object-fit:cover;">
+
+                                    </td>
+
+
+                                    <!-- Student ID -->
+
+                                    <td>
+
+                                        <strong>
+
+                                            <?= htmlspecialchars(
+                                                $user["student_id"]
+                                            ); ?>
+
+                                        </strong>
+
+                                    </td>
+
+
+                                    <!-- Name -->
+
+                                    <td>
+
+                                        <?= htmlspecialchars(
+                                            $user["name"]
+                                        ); ?>
+
+                                    </td>
+
+
+                                    <!-- Email -->
+
+                                    <td>
+
+                                        <?= htmlspecialchars(
+                                            $user["email"]
+                                        ); ?>
+
+                                    </td>
+
+
+                                    <!-- Role -->
+
+                                    <td>
+
+
+                                        <?php
+
+                                        if (
+                                            $user["role"]
+                                            === "admin"
+                                        ) {
+
+                                        ?>
+
+                                            <span
+                                                class="badge bg-danger">
+
+                                                Admin
+
+                                            </span>
+
+                                        <?php
+
+                                        } else {
+
+                                        ?>
+
+                                            <span
+                                                class="badge bg-primary">
+
+                                                Student
+
+                                            </span>
+
+                                        <?php
+
+                                        }
+
+
+                                        ?>
+
+                                    </td>
+
+
+                                    <!-- Actions -->
+
+                                    <td class="text-center">
+
+
+                                        <!-- Edit -->
+
+                                        <a
+                                            href="admin_user_edit.php?id=<?= $user["user_id"]; ?>"
+                                            class="btn btn-sm btn-outline-primary me-1">
+
+                                            <i
+                                                class="bi bi-pencil">
+                                            </i>
+
+                                            Edit
+
+                                        </a>
+
+
+                                        <!-- Delete -->
+
+                                        <?php
+
+                                        if (
+                                            $user["user_id"]
+                                            == $_SESSION["user_id"]
+                                        ) {
+
+                                        ?>
+
+                                            <!-- Current Admin -->
+
+                                            <button
+                                                type="button"
+                                                class="btn btn-sm btn-outline-secondary"
+                                                disabled
+                                                title="You cannot delete your own account">
+
+                                                <i
+                                                    class="bi bi-trash">
+                                                </i>
+
+                                                Delete
+
+                                            </button>
+
+                                        <?php
+
+                                        } else {
+
+                                        ?>
+
+                                            <!-- Other Users -->
+
+                                            <a
+                                                href="admin_user_delete.php?id=<?= $user["user_id"]; ?>"
+                                                class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Are you sure you want to delete this user?');">
+
+                                                <i
+                                                    class="bi bi-trash">
+                                                </i>
+
+                                                Delete
+
+                                            </a>
+
+                                        <?php
+
+                                        }
+
+
+                                        ?>
+
+                                    </td>
+
+
+                                </tr>
+
+
+                            <?php
+
+                                $counter++;
+                            }
+
+                            ?>
+
+
+                            <?php
+
+                            if ($counter === 1) {
+
+                            ?>
+
+                                <tr>
+
+                                    <td
+                                        colspan="7"
+                                        class="text-center text-muted py-5">
+
+                                        No users found.
+
+                                    </td>
+
+                                </tr>
+
+                            <?php
+
+                            }
+
+                            ?>
+
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </main>
+
+
+    <!-- Bootstrap JS -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
 
 
 </body>

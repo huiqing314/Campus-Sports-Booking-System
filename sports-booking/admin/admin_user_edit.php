@@ -246,6 +246,8 @@ if (isset($_POST["update_user"])) {
             <ul class="navbar-nav ms-auto">
 
 
+                <!-- Dashboard -->
+
                 <li class="nav-item">
 
                     <a
@@ -258,6 +260,8 @@ if (isset($_POST["update_user"])) {
 
                 </li>
 
+
+                <!-- Users -->
 
                 <li class="nav-item">
 
@@ -272,6 +276,8 @@ if (isset($_POST["update_user"])) {
                 </li>
 
 
+                <!-- Facilities -->
+
                 <li class="nav-item">
 
                     <a
@@ -285,6 +291,8 @@ if (isset($_POST["update_user"])) {
                 </li>
 
 
+                <!-- Bookings -->
+
                 <li class="nav-item">
 
                     <a
@@ -297,6 +305,8 @@ if (isset($_POST["update_user"])) {
 
                 </li>
 
+
+                <!-- Logout -->
 
                 <li class="nav-item">
 
@@ -383,7 +393,7 @@ if (isset($_POST["update_user"])) {
 
                     if (empty($photo)) {
 
-                        $photo = "default-avatar.jpg";
+                        $photo = "profile.png";
 
                     }
 
