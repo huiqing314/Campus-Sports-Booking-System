@@ -1,23 +1,23 @@
 <?php  //应该也ok了 但是user profile 比较简单
 
  
-// 1. 开启 Session
+// open session to check if user is logged in
 require_once __DIR__ . '/includes/session.php';
 
-// 如果未登录，直接跳回登录页面
+//if no user_id in session, redirect to login page
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
-// 包含数据库配置文件 (MySQLi)
+// connect to database
 require_once __DIR__ . '/includes/db.php';
 
 $user_id = $_SESSION['user_id'];
 $message = '';
 $error = '';
 
-// 2. 处理表单提交（更新个人资料）
+// 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name     = trim($_POST['name']);
     $email    = trim($_POST['email']);
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($name) || empty($email)) {
         $error = "Name and Email cannot be empty!";
     } else {
-        // 处理头像上传
+        // handle photo upload
         $photo_name = $_SESSION['photo'] ?? null;
         if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
             $file_tmp      = $_FILES['photo']['tmp_name'];
@@ -52,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // 更新数据库 (MySQLi)
         if (empty($error)) {
             if (!empty($password)) {
                 $stmt = $conn->prepare("UPDATE users SET name = ?, email = ?, password = ?, photo = ? WHERE user_id = ?");
@@ -74,7 +73,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// 3. 从数据库查询最新的用户信息 (MySQLi)
 $stmt = $conn->prepare("SELECT * FROM users WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -86,13 +84,12 @@ if (!$user) {
     die("User not found!");
 }
 
-// 判断头像路径
 $avatar = 'images/profile.png';
 if (!empty($user['photo']) && file_exists(__DIR__ . '/uploads/' . $user['photo'])) {
     $avatar = 'uploads/' . $user['photo'];
 }
 
-// 引入 Header
+//  Header
 include __DIR__ . '/includes/header.php';
 ?>
 

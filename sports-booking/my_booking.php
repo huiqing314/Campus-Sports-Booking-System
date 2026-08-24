@@ -1,6 +1,6 @@
-<?php  //这个是for user booking history 应该也ok了
+<?php  //all is ok
 
-// 1. 引入 Session
+// check for user login
 require_once __DIR__ . '/includes/session.php';
 
 // 验证登录
@@ -9,25 +9,24 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// 2. 引入数据库连接 (MySQLi)
+// connect to database
 require_once __DIR__ . '/includes/db.php';
 
 $user_id = $_SESSION['user_id'];
 $message = '';
 $error   = '';
 
-// 3. 处理取消预订请求 (POST)
+// managed cancel booking request
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'cancel') {
     $booking_id = intval($_POST['booking_id']);
 
-    // 安全检查：确保该预订记录属于当前登录用户
     $check_stmt = $conn->prepare("SELECT booking_id FROM bookings WHERE booking_id = ? AND user_id = ?");
     $check_stmt->bind_param("ii", $booking_id, $user_id);
     $check_stmt->execute();
     $check_result = $check_stmt->get_result();
 
     if ($check_result->num_rows > 0) {
-        // 更新预订状态为 Cancelled
+        // udpate status to cancelled
         $update_stmt = $conn->prepare("UPDATE bookings SET status = 'Cancelled' WHERE booking_id = ?");
         $update_stmt->bind_param("i", $booking_id);
         
@@ -43,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $check_stmt->close();
 }
 
-// 4. 从数据库获取该用户的所有预订记录（关联 facilities 设施表）
 $query = "
     SELECT b.*, f.facility_name, f.location 
     FROM bookings b
@@ -57,7 +55,6 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// 引入 Header
 include __DIR__ . '/includes/header.php';
 ?>
 
@@ -70,7 +67,6 @@ include __DIR__ . '/includes/header.php';
         <a href="booking.php" class="btn btn-primary fw-semibold">+ New Booking</a>
     </div>
 
-    <!-- 消息提示 -->
     <?php if (!empty($message)): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <?php echo htmlspecialchars($message); ?>
@@ -85,7 +81,6 @@ include __DIR__ . '/includes/header.php';
         </div>
     <?php endif; ?>
 
-    <!-- 预订列表 -->
     <div class="card shadow-sm border-0 rounded-3">
         <div class="card-body p-0">
             <?php if ($result && $result->num_rows > 0): ?>

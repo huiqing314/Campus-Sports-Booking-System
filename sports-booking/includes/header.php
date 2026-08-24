@@ -1,16 +1,16 @@
 <?php
-// 确保 Session 已开启
+// ensure session is started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 获取当前登录用户的信息（如果已登录）
+// get user info from session
 $is_logged_in = isset($_SESSION['user_id']);
 $user_name    = $is_logged_in ? $_SESSION['name'] : 'Guest';
 $user_role    = $is_logged_in && isset($_SESSION['role']) ? $_SESSION['role'] : '';
 
-// 设置头像路径：如果用户有 photo 且不为空，则读取，否则用默认图片
-$user_photo = 'images/profile.png'; // 默认头像
+// set default profile picture
+$user_photo = 'images/profile.png'; 
 if ($is_logged_in && !empty($_SESSION['photo'])) {
     $custom_photo = 'uploads/' . $_SESSION['photo'];
     if (file_exists($custom_photo)) {
@@ -82,7 +82,7 @@ if ($is_logged_in && !empty($_SESSION['photo'])) {
                 </li>
 
                 <?php if ($is_logged_in): ?>
-                    <!-- 已登录状态 -->
+                   
                     <li class="nav-item dropdown ms-lg-3">
 
                         <a class="nav-link dropdown-toggle d-flex align-items-center"
@@ -144,7 +144,7 @@ if ($is_logged_in && !empty($_SESSION['photo'])) {
 
                     </li>
                 <?php else: ?>
-                    <!-- 未登录状态 -->
+                    
                     <li class="nav-item ms-lg-3">
                         <a class="btn btn-outline-light btn-sm px-3" href="login.php">Login</a>
                     </li>
