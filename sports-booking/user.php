@@ -1,23 +1,20 @@
-<?php  //应该也ok了 但是user profile 比较简单
-
- 
-// 1. 开启 Session
+<?php  
+// open session to check if user is logged in
 require_once __DIR__ . '/includes/session.php';
 
-// 如果未登录，直接跳回登录页面
+// if no user_id in session, redirect to login page
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
-// 包含数据库配置文件 (MySQLi)
+// connect to database
 require_once __DIR__ . '/includes/db.php';
 
 $user_id = $_SESSION['user_id'];
 $message = '';
-$error = '';
+$error   = '';
 
-// 2. 处理表单提交（更新个人资料）
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name     = trim($_POST['name']);
     $email    = trim($_POST['email']);
@@ -26,8 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($name) || empty($email)) {
         $error = "Name and Email cannot be empty!";
     } else {
-        // 处理头像上传
+        // handle photo upload
         $photo_name = $_SESSION['photo'] ?? null;
+        
         if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
             $file_tmp      = $_FILES['photo']['tmp_name'];
             $original_name = $_FILES['photo']['name'];
@@ -36,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (in_array($file_ext, $allowed_exts)) {
                 $new_photo_name = 'user_' . $user_id . '_' . time() . '.' . $file_ext;
-                $upload_dir     = __DIR__ . '/images/';
+                $upload_dir     = __DIR__ . '/uploads/';
 
                 if (!is_dir($upload_dir)) {
                     mkdir($upload_dir, 0777, true);
@@ -52,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // 更新数据库 (MySQLi)
         if (empty($error)) {
             if (!empty($password)) {
                 $stmt = $conn->prepare("UPDATE users SET name = ?, email = ?, password = ?, photo = ? WHERE user_id = ?");
@@ -74,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// 3. 从数据库查询最新的用户信息 (MySQLi)
+// 重新读取最新用户信息
 $stmt = $conn->prepare("SELECT * FROM users WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -86,13 +83,13 @@ if (!$user) {
     die("User not found!");
 }
 
-// 判断头像路径
+// 默认头像路径
 $avatar = 'images/profile.png';
 if (!empty($user['photo']) && file_exists(__DIR__ . '/uploads/' . $user['photo'])) {
     $avatar = 'uploads/' . $user['photo'];
 }
 
-// 引入 Header
+// Header
 include __DIR__ . '/includes/header.php';
 ?>
 
@@ -122,7 +119,9 @@ include __DIR__ . '/includes/header.php';
                     <form action="user.php" method="POST" enctype="multipart/form-data">
                         
                         <div class="text-center mb-4">
-                            <img src="<?php echo htmlspecialchars($avatar); ?>" 
+                            <!-- 加上 id="avatar-preview" 方便 JS 选中修改 -->
+                            <img id="avatar-preview" 
+                                 src="<?php echo htmlspecialchars($avatar); ?>" 
                                  class="rounded-circle img-thumbnail shadow-sm mb-2" 
                                  width="120" height="120" 
                                  style="object-fit: cover;" 
@@ -130,28 +129,34 @@ include __DIR__ . '/includes/header.php';
                             
                             <div class="mt-2">
                                 <label for="photo" class="form-label text-muted fs-7">Change Profile Photo</label>
-                                <input class="form-control form-control-sm" type="file" id="photo" name="photo" accept="image/*">
+                                <!-- 加上 onchange 事件调用预览方法 -->
+                                <input class="form-control form-control-sm" 
+                                       type="file" 
+                                       id="photo" 
+                                       name="photo" 
+                                       accept="image/*"
+                                       onchange="previewImage(event)">
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-medium">Student / Staff ID</label>
-                            <input type="text" class="form-control bg-light" value="<?php echo htmlspecialchars($user['student_id']); ?>" readonly>
+                            <input type="text" class="form-control bg-light" value="<?php echo htmlspecialchars($user['student_id'] ?? ''); ?>" readonly>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-medium">Role</label>
-                            <input type="text" class="form-control bg-light text-capitalize" value="<?php echo htmlspecialchars($user['role']); ?>" readonly>
+                            <input type="text" class="form-control bg-light text-capitalize" value="<?php echo htmlspecialchars($user['role'] ?? ''); ?>" readonly>
                         </div>
 
                         <div class="mb-3">
                             <label for="name" class="form-label fw-medium">Full Name</label>
-                            <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
+                            <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($user['name'] ?? ''); ?>" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="email" class="form-label fw-medium">Email Address</label>
-                            <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                            <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" required>
                         </div>
 
                         <div class="mb-4">
@@ -171,6 +176,19 @@ include __DIR__ . '/includes/header.php';
         </div>
     </div>
 </div>
+
+<script>
+function previewImage(event) {
+    const input = event.target;
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('avatar-preview').src = e.target.result;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
 
 <?php 
 if (file_exists(__DIR__ . '/includes/footer.php')) {

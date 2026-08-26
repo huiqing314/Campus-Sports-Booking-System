@@ -1,8 +1,21 @@
 <?php
-
 include "includes/session.php";  // Session check
 include "includes/db.php";
+
+// 确保必须登录才能预订
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
 include "includes/header.php";
+
+$user_id = $_SESSION['user_id'];
+
+// ---------- 从数据库获取当前登录用户的信息 ----------
+$user_sql = "SELECT * FROM users WHERE user_id = '$user_id'";
+$user_res = mysqli_query($conn, $user_sql);
+$user_info = mysqli_fetch_assoc($user_res);
 
 // ---------- Form processing ----------
 $errors  = [];
@@ -33,31 +46,12 @@ $pre_time     = trim($_GET['time']     ?? $_POST['booking_time'] ?? '');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $student_name  = trim($_POST['student_name']  ?? '');
-    $student_id    = trim($_POST['student_id']    ?? '');
-    $email         = trim($_POST['email']         ?? '');
-    $facility      = trim($_POST['facility']      ?? '');
-    $booking_date  = trim($_POST['booking_date']  ?? '');
-    $booking_time  = trim($_POST['booking_time']  ?? '');
-    $quantity      = trim($_POST['quantity']      ?? '');
+    $facility     = trim($_POST['facility']     ?? '');
+    $booking_date = trim($_POST['booking_date'] ?? '');
+    $booking_time = trim($_POST['booking_time'] ?? '');
+    $group_size    = trim($_POST['group_size']    ?? '');
 
     // Validation
-    if ($student_name === '') {
-        $errors[] = 'Student Name is required.';
-    } elseif (strlen($student_name) < 2) {
-        $errors[] = 'Student Name must be at least 2 characters.';
-    }
-
-    if ($student_id === '') {
-        $errors[] = 'Student ID is required.';
-    }
-
-    if ($email === '') {
-        $errors[] = 'Email is required.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = 'Please enter a valid email address.';
-    }
-
     if ($facility === '' || !in_array($facility, $allowed_facilities, true)) {
         $errors[] = 'Please select a valid facility.';
     }
@@ -72,9 +66,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Please select a valid booking time.';
     }
 
-    if ($quantity === '' || !is_numeric($quantity) || (int)$quantity < 1) {
+    if ($group_size === '' || !is_numeric($group_size) || (int)$group_size < 1) {
         $errors[] = 'Number of Participants must be at least 1.';
-    } elseif ((int)$quantity > 50) {
+    } elseif ((int)$group_size > 50) {
         $errors[] = 'Number of Participants cannot exceed 50.';
     }
 
@@ -114,30 +108,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errors[] = "Sorry, this facility is already booked at the selected date and time.";
             } else {
 
-                // Insert booking
+                // Insert booking (使用 groupsize)
                 $insert_sql = "
                 INSERT INTO bookings
                 (
-                    student_name,
-                    student_id,
-                    email,
+                    user_id,
                     facility_id,
                     booking_date,
                     start_time,
                     end_time,
-                    quantity,
+                    group_size,
                     status
                 )
                 VALUES
                 (
-                    '$student_name',
-                    '$student_id',
-                    '$email',
+                    '$user_id',
                     '$facility_id',
                     '$booking_date',
                     '$booking_time_db',
                     '$end_time_db',
-                    '$quantity',
+                    '$group_size',
                     'Pending'
                 )
                 ";
@@ -149,13 +139,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $success = true;
 
                     $booking = [
-                        'student_name' => $student_name,
-                        'student_id'   => $student_id,
-                        'email'        => $email,
+                        'student_name' => $user_info['name'] ?? 'N/A',
+                        'student_id'   => $user_info['student_id'] ?? 'N/A',
+                        'email'        => $user_info['email'] ?? 'N/A',
                         'facility'     => $facility,
                         'booking_date' => $booking_date,
                         'booking_time' => $booking_time,
-                        'quantity'     => (int)$quantity,
+                        'group_size'    => (int)$group_size,
                     ];
 
                 } else {
@@ -170,15 +160,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-
 <section class="container py-5">
-
-
 <div class="row justify-content-center">
-
-
 <div class="col-md-8">
-
 
 <?php if ($success) : ?>
 
@@ -221,12 +205,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </tr>
 <tr>
 <th>Participants</th>
-<td><?= htmlspecialchars((string)$booking['quantity']) ?></td>
+<td><?= htmlspecialchars((string)$booking['group_size']) ?></td>
 </tr>
 </table>
 
 <div class="text-center mt-3">
 <a href="booking.php" class="btn btn-success me-2">Make Another Booking</a>
+<a href="my_booking.php" class="btn btn-outline-primary me-2">View My Bookings</a>
 <a href="index.php" class="btn btn-outline-secondary">Back to Home</a>
 </div>
 
@@ -237,13 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!-- ===== Booking Form ===== -->
 <div class="card shadow p-4">
 
-
-<h2 class="text-center mb-4">
-
-Book Sports Facility
-
-</h2>
-
+<h2 class="text-center mb-4">Book Sports Facility</h2>
 
 <?php if (!empty($errors)) : ?>
 <div class="alert alert-danger">
@@ -256,325 +235,75 @@ Book Sports Facility
 </div>
 <?php endif; ?>
 
-
 <form method="POST" action="">
 
-
-
-<!-- Student Name -->
-
-<div class="mb-3">
-
-
-<label class="form-label">
-
-Student Name
-
-</label>
-
-
-<input type="text" 
-name="student_name"
-class="form-control"
-placeholder="Enter your name"
-value="<?= htmlspecialchars($_POST['student_name'] ?? '') ?>"
-required>
-
-
+<!-- User Info Display (Readonly) -->
+<div class="row mb-3">
+    <div class="col-md-6">
+        <label class="form-label">Student Name</label>
+        <input type="text" class="form-control bg-light" value="<?= htmlspecialchars($user_info['name'] ?? '') ?>" readonly>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Student ID</label>
+        <input type="text" class="form-control bg-light" value="<?= htmlspecialchars($user_info['student_id'] ?? '') ?>" readonly>
+    </div>
 </div>
 
-
-
-<!-- Student ID -->
-
-
 <div class="mb-3">
-
-
-<label class="form-label">
-
-Student ID
-
-</label>
-
-
-<input type="text"
-name="student_id"
-class="form-control"
-placeholder="Enter student ID"
-value="<?= htmlspecialchars($_POST['student_id'] ?? '') ?>"
-required>
-
-
+    <label class="form-label">Email</label>
+    <input type="email" class="form-control bg-light" value="<?= htmlspecialchars($user_info['email'] ?? '') ?>" readonly>
 </div>
-
-
-
-
-<!-- Email -->
-
-
-<div class="mb-3">
-
-
-<label class="form-label">
-
-Email
-
-</label>
-
-
-<input type="email"
-name="email"
-class="form-control"
-placeholder="Enter email"
-value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
-required>
-
-
-</div>
-
-
-
 
 <!-- Facility -->
-
-
 <div class="mb-3">
-
-
-<label class="form-label">
-
-Select Facility
-
-</label>
-
-
-<select name="facility"
-class="form-select"
-required>
-
-
-<option value="">
-
--- Select Facility --
-
-</option>
-
-
-<option value="Badminton Court" <?= ($pre_facility === 'Badminton Court') ? 'selected' : '' ?>>
-
-Badminton Court
-
-</option>
-
-
-<option value="Basketball Court" <?= ($pre_facility === 'Basketball Court') ? 'selected' : '' ?>>
-
-Basketball Court
-
-</option>
-
-
-<option value="Football Field" <?= ($pre_facility === 'Football Field') ? 'selected' : '' ?>>
-
-Football Field
-
-</option>
-
-
-<option value="Swimming Pool" <?= ($pre_facility === 'Swimming Pool') ? 'selected' : '' ?>>
-
-Swimming Pool
-
-</option>
-
-
-<option value="Tennis Court" <?= ($pre_facility === 'Tennis Court') ? 'selected' : '' ?>>
-
-Tennis Court
-
-</option>
-
-
-<option value="Gymnasium" <?= ($pre_facility === 'Gymnasium') ? 'selected' : '' ?>>
-
-Gymnasium
-
-</option>
-
-
-
+<label class="form-label">Select Facility</label>
+<select name="facility" class="form-select" required>
+<option value="">-- Select Facility --</option>
+<option value="Badminton Court" <?= ($pre_facility === 'Badminton Court') ? 'selected' : '' ?>>Badminton Court</option>
+<option value="Basketball Court" <?= ($pre_facility === 'Basketball Court') ? 'selected' : '' ?>>Basketball Court</option>
+<option value="Football Field" <?= ($pre_facility === 'Football Field') ? 'selected' : '' ?>>Football Field</option>
+<option value="Swimming Pool" <?= ($pre_facility === 'Swimming Pool') ? 'selected' : '' ?>>Swimming Pool</option>
+<option value="Tennis Court" <?= ($pre_facility === 'Tennis Court') ? 'selected' : '' ?>>Tennis Court</option>
+<option value="Gymnasium" <?= ($pre_facility === 'Gymnasium') ? 'selected' : '' ?>>Gymnasium</option>
 </select>
-
-
 </div>
-
-
-
-
 
 <!-- Date -->
-
-
 <div class="mb-3">
-
-
-<label class="form-label">
-
-Booking Date
-
-</label>
-
-
-<input type="date"
-name="booking_date"
-class="form-control"
-min="<?= date('Y-m-d') ?>"
-value="<?= htmlspecialchars($pre_date) ?>"
-required>
-
-
+<label class="form-label">Booking Date</label>
+<input type="date" name="booking_date" class="form-control" min="<?= date('Y-m-d') ?>" value="<?= htmlspecialchars($pre_date) ?>" required>
 </div>
-
-
-
-
 
 <!-- Time -->
-
-
 <div class="mb-3">
-
-
-<label class="form-label">
-
-Booking Time
-
-</label>
-
-
-
-<select name="booking_time"
-class="form-select"
-required>
-
-
+<label class="form-label">Booking Time</label>
+<select name="booking_time" class="form-select" required>
 <option value="">-- Select Time --</option>
-
-
-<option value="8:00 AM" <?= ($pre_time === '8:00 AM') ? 'selected' : '' ?>>
-
-8:00 AM
-
-</option>
-
-
-<option value="10:00 AM" <?= ($pre_time === '10:00 AM') ? 'selected' : '' ?>>
-
-10:00 AM
-
-</option>
-
-
-<option value="12:00 PM" <?= ($pre_time === '12:00 PM') ? 'selected' : '' ?>>
-
-12:00 PM
-
-</option>
-
-
-<option value="2:00 PM" <?= ($pre_time === '2:00 PM') ? 'selected' : '' ?>>
-
-2:00 PM
-
-</option>
-
-
-<option value="4:00 PM" <?= ($pre_time === '4:00 PM') ? 'selected' : '' ?>>
-
-4:00 PM
-
-</option>
-
-
-<option value="6:00 PM" <?= ($pre_time === '6:00 PM') ? 'selected' : '' ?>>
-
-6:00 PM
-
-</option>
-
-
-
+<option value="8:00 AM" <?= ($pre_time === '8:00 AM') ? 'selected' : '' ?>>8:00 AM</option>
+<option value="10:00 AM" <?= ($pre_time === '10:00 AM') ? 'selected' : '' ?>>10:00 AM</option>
+<option value="12:00 PM" <?= ($pre_time === '12:00 PM') ? 'selected' : '' ?>>12:00 PM</option>
+<option value="2:00 PM" <?= ($pre_time === '2:00 PM') ? 'selected' : '' ?>>2:00 PM</option>
+<option value="4:00 PM" <?= ($pre_time === '4:00 PM') ? 'selected' : '' ?>>4:00 PM</option>
+<option value="6:00 PM" <?= ($pre_time === '6:00 PM') ? 'selected' : '' ?>>6:00 PM</option>
 </select>
-
-
 </div>
 
-
-
-
-
-<!-- Quantity -->
-
-
+<!-- Group Size -->
 <div class="mb-3">
-
-
-<label class="form-label">
-
-Number of Participants
-
-</label>
-
-
-<input type="number"
-name="quantity"
-class="form-control"
-min="1"
-max="50"
-value="<?= htmlspecialchars($_POST['quantity'] ?? '1') ?>"
-required>
-
-
+<label class="form-label">Number of Participants</label>
+<input type="number" name="group_size" class="form-control" min="1" max="50" value="<?= htmlspecialchars($_POST['group_size'] ?? '1') ?>" required>
 </div>
 
-
-
-
-
-<button type="submit"
-class="btn btn-success w-100">
-
-
-Submit Booking
-
-
-</button>
-
-
+<button type="submit" class="btn btn-success w-100">Submit Booking</button>
 
 </form>
-
 
 </div>
 
 <?php endif; ?>
 
-
 </div>
-
-
 </div>
-
-
 </section>
 
-
-
-
-<?php
-
-include "includes/footer.php";
-
-?>
+<?php include "includes/footer.php"; ?>
